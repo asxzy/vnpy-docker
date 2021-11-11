@@ -24,22 +24,24 @@ RUN cd /tmp \
     && wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz \
     && tar -xzf ta-lib-0.4.0-src.tar.gz \
     && cd ta-lib \
-    && ./configure  --prefix=/usr --build=amd64-unknown-linux-gnu/\
+    && ./configure  --prefix=/usr\
     && make -j 1 \
     && make install \
     && rm -rf /tmp/ta-lib*
 
 # install vnpy
 RUN python -m pip install -U pip
-RUN python -m pip install numpy
-RUN python -m pip install ta-lib
 
 ADD https://raw.githubusercontent.com/vnpy/vnpy/master/requirements.txt .
 RUN sed -i "s/vnpy_leveldb/# vnpy_leveldb/" requirements.txt
 
 RUN python -m pip install -r requirements.txt
 
+# install vnpy master
 RUN python -m pip install git+https://github.com/vnpy/vnpy.git
+
+# reinstall ta-lib
+RUN python -m pip install -U -I ta-lib
 
 WORKDIR /app
 
